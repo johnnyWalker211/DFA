@@ -1,0 +1,135 @@
+
+import java.util.*;
+import java.io.*;
+
+public class DFA {
+	//This will be the matrix to hold the transition elements.
+	private int[][] Transition = new int[20][20];
+	//The indexes for the 2D Transition Array referencing the alphabet elements.
+	private int alphabetSet;
+	//The indexes for the state the machine is in.
+	private int stateSet;
+	//The end state of the machine. These will be something like:"q0", "q1"
+	private ArrayList<Integer> finalStates;
+	//The alphabet of the machine
+	private ArrayList<Character> alphabet;
+	//Reader for the user input
+	private BufferedReader inputReader;
+	
+	public DFA() throws Exception {	//The Exception here is required by the inputReader.readLine() method.
+		//This will do all the reading from the user input at the command prompt.
+		inputReader = new BufferedReader(new InputStreamReader(System.in));
+		
+		System.out.println("Please input the number of elements in the alphabet you will be using \n"
+				+ "Ex: Alphabet contains \"10\", Your input will be: 2");
+		//Read and store the number of elements in the alphabet.
+		alphabetSet = Integer.parseInt(inputReader.readLine());
+		//System.out.println(alphabetSet);  //TEST
+		System.out.println("Please input the number of states the machine will have.");
+		//Read and store the number of states the machine has.
+		stateSet = Integer.parseInt(inputReader.readLine());
+		System.out.println(stateSet); //TEST
+		System.out.println("Please enter all of the elements that are within your alphabet. \n"
+				+ "Ex: Your alphabet is: 0, 1. You will enter 01");
+		/**
+		System.out.println("Is your input going to be an integer? y/n?");
+		
+		String userAnswer = inputReader.readLine();
+		if(userAnswer.equals('y')){
+			System.out.println("Proceed to enter your integer.");
+			String alphabetTemp = Integer.parseInt()inputReader.readLine();
+		}
+		*/
+		//This will store the user input as a String to the be parsed into
+		//the alphabet ArrayList.
+		String alphabetTemp = inputReader.readLine();
+		
+		alphabet = new ArrayList<Character>();
+		for(int i = 0; i < alphabetTemp.length(); i++){
+			//This will break down the alphabet and store them as Characters in our alphabet.
+			alphabet.add(alphabetTemp.charAt(i));
+			}
+		//Just a utility for the System Print in the for loop.
+		int rowCounter = 1;
+		
+		System.out.print("Now for the transistion table. Here you will enter what state \n"
+				+ "you wish to be in. The first entry will be for your State#1 at your\n"
+				+ "first alphabet element. Then your second alphabet element. Then your third and so on.\n"
+				+ "When you are done with the first row you will enter your second row and so on.");
+		
+		for(int i = 0; i < stateSet; i++){
+			System.out.println("Alright, please enter the rows for your transition table.\n"
+					+ "You are on row: " + rowCounter);
+			for(int j = 0; j < alphabetSet; j++){
+				//This will be the state for Transition [i][j]
+				int insertedState = Integer.parseInt(inputReader.readLine());
+				Transition [i][j] = insertedState;
+			}
+			rowCounter++;
+		}
+		
+		System.out.println("Now enter the final accept states for your machine. Press enter after each one. \n"
+				+ "When you are done please enter -1 to indicate you are finished.");
+		//This is the holder for each user defined finish state.
+		int finishedState = Integer.parseInt(inputReader.readLine());
+		
+		finalStates = new ArrayList<Integer>();
+		
+		while(finishedState != (-1)){
+			//Add the input to the ArrayList
+			finalStates.add(finishedState);
+			//Read the next line.
+			finishedState = Integer.parseInt(inputReader.readLine());
+		}
+		
+	}
+	
+	/**
+	 * This will be for the users to interface with the program and enter their information about
+	 * the String they wish to test.
+	 * @throws IOException 
+	 * @throws NumberFormatException 
+	 */
+	private void userRun() throws NumberFormatException, IOException{
+		System.out.println("Please enter where you would like to start.");
+		//Create the start state.
+		int state = Integer.parseInt(inputReader.readLine());
+		
+		System.out.println("Please enter the String you wish to test./n"
+				+ "End your string with '$' to indicate the end of the String.");
+		
+		//The user input String.
+		String userString = inputReader.readLine();
+		//Index for while loop.
+		int index = 0;
+		//As long as the char is not '$' the program will keep changing to the appropriate state.
+		while(userString.charAt(index) != '$'){
+			//get the char at the curr index.
+			char inputChar = userString.charAt(index);
+			//This will get the alphabet index of where the character is 'located'.
+			int transistionIndex = alphabet.indexOf(inputChar);
+			//Take the current state and the index of the alphabet that was found and that is the new state!
+			state = Transition[state][transistionIndex];
+			
+			index++;
+		}
+		
+		System.out.print("The final state is: "+ state);
+		//Check to see if the last state that the program was in is withing the
+		//accepted states array called finalStates.
+		if(finalStates.contains(state)){
+			System.out.println("The machine accepts the string: " + userString);
+		}
+		else if(!finalStates.contains(state)){
+			System.out.println("The machine rejects the string: " + userString);
+		}
+	}
+
+	public static void main(String[] args) throws Exception {
+		
+		final DFA testDFA = new DFA();
+		testDFA.userRun();
+
+	}
+
+}
